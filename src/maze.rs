@@ -2,6 +2,8 @@ use std::collections::{HashMap, HashSet};
 use std::fs::File;
 use std::io::{BufRead, BufReader, Error};
 
+type Point = (u32, u32);
+
 #[derive(Debug)]
 enum Cell {
   Path,
@@ -17,10 +19,10 @@ pub struct Maze {
   rows: u32,
   cols: u32,
   grid: Vec<Vec<Cell>>,
-  visited: HashSet<(u32, u32)>,
-  parent_cells: HashMap<(u32, u32), (u32, u32)>,
-  start: (u32, u32),
-  end: (u32, u32),
+  visited: HashSet<Point>,
+  parent_cells: HashMap<Point, Point>,
+  start: Point,
+  end: Point,
 }
 
 impl Maze {
@@ -142,9 +144,7 @@ impl Maze {
   }
 }
 
-fn read_maze_file(
-  filename: &str,
-) -> Result<(u32, u32, Vec<Vec<Cell>>, (u32, u32), (u32, u32)), Error> {
+fn read_maze_file(filename: &str) -> Result<(u32, u32, Vec<Vec<Cell>>, Point, Point), Error> {
   let file = File::open(filename)?;
   let mut reader = BufReader::new(file);
 
@@ -152,8 +152,8 @@ fn read_maze_file(
   let mut rows = String::new();
   let mut cols = String::new();
 
-  let mut start = (0, 0);
-  let mut end = (0, 0);
+  let mut start: Point = (0, 0);
+  let mut end: Point = (0, 0);
 
   // Read cols
   reader.read_line(&mut rows).expect("Unable to read rows");
